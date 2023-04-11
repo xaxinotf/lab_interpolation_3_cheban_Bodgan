@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33403.182
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "lab_interpolation_3_cheban_Bodgan", "lab_interpolation_3_cheban_Bodgan.csproj", "{CA020394-2D50-4D66-8431-7A1471B07B75}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA020394-2D50-4D66-8431-7A1471B07B75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA020394-2D50-4D66-8431-7A1471B07B75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA020394-2D50-4D66-8431-7A1471B07B75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA020394-2D50-4D66-8431-7A1471B07B75}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95776C0D-4141-48D2-BD5D-67604C465B3F}
+	EndGlobalSection
+EndGlobal
