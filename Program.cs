@@ -1,252 +1,153 @@
-﻿namespace Interpol
+﻿/*
+using System;
+//n=16
+class NewtonInterpolation
 {
-    public class Program
+    static void Main()
     {
-        static double F(double x)
+        int n = 17;
+        double[] x = { 0, 0.125, 0.25, 0.375, 0.5 ,0.625, 0.75,0.875, 1, 1.125, 1.25,1.375, 1.5, 1.625, 1.75, 1.875, 2  };
+        double[] y = { 1, 0.761962890625, 0.53515625, 0.304931640625, 0.0625, -0.195068359375, -0.46484375, -0.738037109375,-1, -1.230224609375, -1.40234375, -1.484130859375, -1.4375, -1.218505859375, -0.77734375, -0.058349609375, 1 };
+        double[] a = new double[n];
+        double[,] b = new double[n, n];
+
+        for (int i = 0; i < n; i++)
         {
-            return Math.Pow(x, 4) - 2 * Math.Pow(x, 3) + Math.Pow(x, 2) - 2 * x + 1;
+            a[i] = y[i];
+            b[i, 0] = y[i];
         }
 
-        static double[,] Table(double x, double h, int n)
+        for (int j = 1; j < n; j++)
         {
-            int index = 0;
-            double[,] matrix = new double[n, 3];
-            for (int i = 0; i < n; i++)
+            for (int i = j; i < n; i++)
             {
-                matrix[i, 0] = index;
-                matrix[i, 1] = x;
-                matrix[i, 2] = Math.Round(F(x), 6);
-                index++;
-                x += h;
-                x = Math.Round(x, 4);
+                b[i, j] = (b[i, j - 1] - b[i - 1, j - 1]) / (x[i] - x[i - j]);
             }
-            return matrix;
+            a[j] = b[j, j];
         }
 
-        static string L(int n, double[,] table)
+        Console.WriteLine("x\tf(x)\t");
+        for (int i = 0; i < n; i++)
         {
-            string lagrangian = "";
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    if (j != i)
-                    {
-                        lagrangian += $"(x - {table[j, 0]})";
-                    }
-                }
-                double num = 1;
-                for (int j = 0; j < n; j++)
-                {
-                    if (j != i)
-                    {
-                        num *= Math.Round(table[j, 1] - table[j, 0], 5);
-                    }
-                }
-                lagrangian += "(" + Math.Round(table[i, 2] / num, 7) + ")";
-
-                if (i != n - 1)
-                {
-                    lagrangian += " + ";
-                }
-            }
-            return lagrangian;
+            Console.WriteLine(x[i] + "\t" + y[i]);
         }
-
-        static double[,] NTable(double x, double h, int n)
+        Console.WriteLine("\nNewton Interpolating Polynomial:");
+        Console.Write("L(x) = ");
+        for (int j = 0; j < n; j++)
         {
-            int index = 0;
-            double[,] matrix = new double[n, n + 2];
-            for (int i = 0; i < n; i++)
+            if (j > 0)
             {
-                matrix[i, 0] = index;
-                matrix[i, 1] = x;
-                matrix[i, 2] = Math.Round(F(x), 5);
-                index++;
-                x += h;
-                x = Math.Round(x, 4);
+                Console.Write(" + ");
             }
-
-            return matrix;
-        }
-
-        static double[,] N(int i, double[,] table, int k)
-        {
-            double a;
-            double b = 0;
-            for (int j = 0; j < i; j++)
+            Console.Write(a[j].ToString("0.##################"));
+            for (int i = 0; i < j; i++)
             {
-                a = b;
-                b = Math.Round(table[j, k], 5);
-                if (j == 0)
-                {
-                    continue;
-                }
-                else
-                {
-                    table[j - 1, k + 1] = Math.Round(b - a, 7);
-                }
-            }
-            a = 0;
-            b = 0;
-
-            if (k != 12)
-            {
-                N(i - 1, table, k + 1);
-            }
-            return table;
-        }
-
-        static int fact(int a)
-        {
-            int b = 1;
-            for (int k = 1; k != a + 1; k++)
-            {
-                b *= k;
-            }
-
-            return b;
-        }
-
-        public static void Main()
-        {
-            //==============================================================
-            //                          Lagranj
-            //==============================================================
-
-            // [-1 ; 1]
-            double a = -1;
-            double b = 1;
-            int n =10;
-            double h = (double)(b - a) / n;
-
-            var matrix = Table(a, h, n);
-
-            Console.WriteLine();
-            Console.WriteLine(" ----------------------------");
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    Console.Write(" | " + matrix[i, j] + " | ");
-                }
-                Console.WriteLine();
-                Console.WriteLine(" ----------------------------");
-            }
-            Console.WriteLine();
-            var str = L(n, matrix);
-
-            Console.WriteLine(str);//Вивід Лагранжіана
-            Console.WriteLine("\n\n");
-
-            //==============================================================
-            //                          Newton
-            //==============================================================
-
-            var nmatrix = NTable(a, h, n);
-
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n + 2; j++)
-                {
-                    Console.Write(nmatrix[i, j] + " | ");
-                }
-                Console.WriteLine();
-                Console.WriteLine("----------------------------------------------------");
-            }
-
-            var Nmatrix = N(10, nmatrix, 2);
-
-            Console.WriteLine();
-            Console.WriteLine("!!!NEWTON!!!");
-            Console.WriteLine();
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n + 2; j++)
-                {
-                    Console.Write(Nmatrix[i, j] + " | ");
-                }
-                Console.WriteLine();
-                Console.WriteLine("------------------------------------------------------------------------------");
-            }
-            Console.WriteLine();
-
-            string newton = "(" + Nmatrix[0, 2].ToString() + ")";
-
-            for (int i = 1; i < 10; i++)
-            {
-                newton += " + ";
-                newton += $"({Math.Round(Nmatrix[0, i + 2] / (fact(i) * Math.Pow(h, i)), 4)})";
-                for (int j = 0; j < i; j++)
-                {
-                    double aa = Nmatrix[j, 1];
-                    if (aa >= 0)
-                    {
-                        newton += $"(x - {Math.Abs(aa)})";
-                    }
-                    else
-                    {
-                        newton += $"(x + {Math.Abs(aa)})";
-                    }
-                    aa = 0;
-                }
-            }
-
-            Console.WriteLine(newton);
-
-            using (StreamWriter stream = new StreamWriter(@"D:\res.txt"))
-            {
-                string s = "";
-                for (int index = 0; index < str.Length; index++)
-                {
-                    if (str[index] == '(')
-                    {
-                        s += @"\left(";
-                    }
-                    else if (str[index] == ')')
-                    {
-                        s += @"\right)";
-                    }
-                    else if (str[index] == ',')
-                        s += ".";
-                    else if (str[index] == 'E')
-                    {
-                        s += @"\cdot10^{" + str[index + 1] + str[index + 2] + str[index + 3] + "}";
-                        index += 3;
-                    }
-                    else
-                        s += str[index];
-                }
-
-                stream.Write(s);
-
-                stream.WriteLine("\n\n\n");
-
-                s = "";
-
-                for (int index = 0; index < newton.Length; index++)
-                {
-                    if (newton[index] == '(')
-                    {
-                        s += @"\left(";
-                    }
-                    else if (newton[index] == ')')
-                    {
-                        s += @"\right)";
-                    }
-                    else if (newton[index] == ',')
-                        s += ".";
-                    else if (newton[index] == 'E')
-                    {
-                        s += @"\cdot10^{" + newton[index + 1] + newton[index + 2] + newton[index + 3] + "}";
-                        index += 3;
-                    }
-                    else
-                        s += newton[index];
-                }
-
-                stream.Write(s);
+                Console.Write("*(x-" + x[i].ToString("0.##################") + ")");
             }
         }
     }
 }
+*/
+
+
+/*
+using System;
+//n=8
+class NewtonInterpolation
+{
+    static void Main()
+    {
+        int n = 9;
+        double[] x = {0, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2 };
+        double[] y = {1, 0.53515625, 0.0625, -0.46484375,-1, -1.40234375, -1.4375, -0.77734375, 1};
+        double[] a = new double[n];
+        double[,] b = new double[n, n];
+
+        for (int i = 0; i < n; i++)
+        {
+            a[i] = y[i];
+            b[i, 0] = y[i];
+        }
+
+        for (int j = 1; j < n; j++)
+        {
+            for (int i = j; i < n; i++)
+            {
+                b[i, j] = (b[i, j - 1] - b[i - 1, j - 1]) / (x[i] - x[i - j]);
+            }
+            a[j] = b[j, j];
+        }
+
+        Console.WriteLine("x\tf(x)\t");
+        for (int i = 0; i < n; i++)
+        {
+            Console.WriteLine(x[i] + "\t" + y[i]);
+        }
+        Console.WriteLine("\nNewton Interpolating Polynomial:");
+        Console.Write("L(x) = ");
+        for (int j = 0; j < n; j++)
+        {
+            if (j > 0)
+            {
+                Console.Write(" + ");
+            }
+            Console.Write(a[j].ToString("0.##################"));
+            for (int i = 0; i < j; i++)
+            {
+                Console.Write("*(x-" + x[i].ToString("0.##################") + ")");
+            }
+        }
+    }
+}
+*/
+
+using System;
+//n=4
+class NewtonInterpolation
+{
+    static void Main()
+    {
+        int n = 5;
+        double[] x = { 0, 0.5, 1, 1.5, 2 };
+        double[] y = {1, 0.0625, -1, -1.4375, 1 };
+        double[] a = new double[n];
+        double[,] b = new double[n, n];
+
+        for (int i = 0; i < n; i++)
+        {
+            a[i] = y[i];
+            b[i, 0] = y[i];
+        }
+
+        for (int j = 1; j < n; j++)
+        {
+            for (int i = j; i < n; i++)
+            {
+                b[i, j] = (b[i, j - 1] - b[i - 1, j - 1]) / (x[i] - x[i - j]);
+            }
+            a[j] = b[j, j];
+        }
+
+        Console.WriteLine("x\tf(x)\t");
+        for (int i = 0; i < n; i++)
+        {
+            Console.WriteLine(x[i] + "\t" + y[i]);
+        }
+        Console.WriteLine("\nNewton Interpolating Polynomial:");
+        Console.Write("L(x) = ");
+        for (int j = 0; j < n; j++)
+        {
+            if (j > 0)
+            {
+                Console.Write(" + ");
+            }
+            Console.Write(a[j].ToString("0.##################"));
+            for (int i = 0; i < j; i++)
+            {
+                Console.Write("*(x-" + x[i].ToString("0.##################") + ")");
+            }
+        }
+    }
+}
+
+
